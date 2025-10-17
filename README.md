@@ -48,7 +48,7 @@ The `data/` folder already contains the required CSV files and noise configurati
 
 ---
 
-## 🚀 Running Experiments
+## Running Experiments
 
 ### 1. Train Baselines
 Train and evaluate the baseline models:
@@ -90,18 +90,12 @@ k, "Best_AP_Combination", Best_MSE, Time_sec
 ## Methodology Summary
 
 ### Brute-Force Search
-Exhaustively evaluates every AP subset under additive noise:
-\[
-r'_{i,j} = r_{i,j} + \eta_{i,j}, \quad \eta_{i,j} \sim \mathcal{N}(0, 10^2)
-\]
+Exhaustively evaluates every AP subset under additive noise.
 This provides the ground-truth vulnerability distribution, serving as the benchmark for APexDQN.
 
 ### APexDQN (Proposed)
 - Models AP subset selection as a one-step contextual bandit.  
-- Employs a DQN agent with ε-greedy exploration:
-  \[
-  a^* = \arg\max_a Q_\theta(s, a)
-  \]
+- Employs a DQN agent with ε-greedy exploration.
 - Reward is defined as the increase in localization MSE after perturbing the chosen subset.  
 - Each episode is terminal; training is purely single-step, requiring no replay buffer or target network.  
 - Reduces combinatorial complexity from \(\mathcal{O}\!\left(\binom{N_{AP}}{k}\right)\) to linear episodes per *k*.
@@ -143,7 +137,7 @@ If you use this code, please cite:
 
 ---
 
-## 👩‍💻 Authors and Affiliations
+## Authors and Affiliations
 
 **Muhammed Noshin**, **Muhammad Hannan Akhtar**, **Mohamed I. AlHajri**, **Mohammad Zulkernine**  
 - *Department of Computer Science and Engineering*, American University of Sharjah, UAE  
@@ -151,7 +145,7 @@ If you use this code, please cite:
 
 ---
 
-## ⚖️ License
+## License
 
 Released under the **MIT License**.  
 You are free to use, modify, and distribute this code with proper attribution.
