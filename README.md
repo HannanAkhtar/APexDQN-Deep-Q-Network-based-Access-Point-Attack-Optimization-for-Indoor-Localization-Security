@@ -98,7 +98,7 @@ This provides the ground-truth vulnerability distribution, serving as the benchm
 - Employs a DQN agent with ε-greedy exploration.
 - Reward is defined as the increase in localization MSE after perturbing the chosen subset.  
 - Each episode is terminal; training is purely single-step, requiring no replay buffer or target network.  
-- Reduces combinatorial complexity from \(\mathcal{O}\!\left(\binom{N_{AP}}{k}\right)\) to linear episodes per *k*.
+- This reduces the search complexity from combinatorial, $\mathcal{O}\left(\binom{N_{AP}}{k}\right)$, to linear in the number of episodes.
 
 ---
 
