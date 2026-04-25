@@ -1,4 +1,4 @@
-# On the Combinatorial Vulnerability of Access Points in Wi-Fi Fingerprinting
+# On the Combinatorial Vulnerability of Access Points in Wi-Fi Fingerprinting: Characterization and Efficient Identification
 
 ![Figure 1: Methodology for combinatorial AP vulnerability assessment](figures/figure1.pdf)
 
