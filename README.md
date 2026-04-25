@@ -1,6 +1,6 @@
-# On the Combinatorial Vulnerability of Access Points in Wi-Fi Fingerprinting
+# On the Combinatorial Vulnerability of Access Points in Wi-Fi Fingerprinting: Characterization and Efficient Identification
 
-![Figure 1: Methodology for combinatorial AP vulnerability assessment](figures/figure1.pdf)
+![Figure 1: Methodology for combinatorial AP vulnerability assessment](figures/figure1.png)
 
 ---
 
@@ -17,6 +17,8 @@ Using the UJIIndoorLoc dataset, we exhaustively characterize the vulnerability l
 
 The repository benchmarks brute-force enumeration against scalable search strategies, including Genetic Algorithm (GA), Simulated Annealing (SA), Deep Q-Network (DQN), RSSI-proximity selection, and random sampling. The results show that GA and SA most reliably recover near-worst-case AP subsets, while RSSI-based and random strategies substantially underestimate worst-case vulnerability.
 
+A key result is that **Simulated Annealing (SA)** provides the strongest runtime-accuracy trade-off, achieving speedups exceeding **5000× on the Neural Network model** and up to approximately **3000× on the XGBoost model** at peak brute-force complexity, while remaining close to the brute-force upper bound.
+
 ---
 
 ## Abstract
@@ -27,7 +29,7 @@ In particular, a fundamental question arises: **which subsets of APs, if comprom
 
 Through exhaustive analysis on the UJIIndoorLoc dataset, we show that localization vulnerability is highly non-uniform and exhibits a heavy-tailed distribution: most AP subsets produce only moderate degradation, while a small number of rare combinations cause disproportionately large localization errors. We further demonstrate that common defensive intuitions, such as prioritizing high-RSSI APs, fail to identify these security-critical subsets.
 
-To enable scalable vulnerability assessment in practical IoT deployments, we evaluate a range of search strategies for identifying high-impact AP combinations. The results show that structured combinatorial search can efficiently recover near-worst-case attacks without exhaustive enumeration. These findings establish combinatorial vulnerability as a fundamental property of Wi-Fi fingerprinting systems and highlight the need for systematic, infrastructure-level security evaluation.
+To enable scalable vulnerability assessment in practical IoT deployments, we evaluate a range of search strategies for identifying high-impact AP combinations. The results show that structured combinatorial search can efficiently recover near-worst-case attacks without exhaustive enumeration. In particular, GA and SA recover near-brute-force AP subsets, with SA achieving speedups exceeding **5000× on NN** and up to approximately **3000× on XGBoost** at peak brute-force complexity. These findings establish combinatorial vulnerability as a fundamental property of Wi-Fi fingerprinting systems and highlight the need for systematic, infrastructure-level security evaluation.
 
 ---
 
@@ -36,8 +38,8 @@ To enable scalable vulnerability assessment in practical IoT deployments, we eva
 ### 1. Clone and prepare environment
 
 ```bash
-git clone https://github.com/HannanAkhtar/APexDQN-Deep-Q-Network-based-Access-Point-Attack-Optimization-for-Indoor-Localization-Security.git
-cd APexDQN-Deep-Q-Network-based-Access-Point-Attack-Optimization-for-Indoor-Localization-Security
+git clone https://github.com/HannanAkhtar/AP-Vulnerability-WiFi-Localization.git
+cd AP-Vulnerability-WiFi-Localization
 python -m venv .venv
 source .venv/bin/activate        # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt
@@ -101,36 +103,121 @@ Each method evaluates candidate AP subsets under the same perturbation protocol 
 
 Brute-force search exhaustively evaluates every possible AP subset for a fixed attack size *k*. This provides the true worst-case AP combination and serves as the reference for evaluating all approximate search methods.
 
+For the retained 21-AP setting, the total search space contains:
+
+```text
+2^21 - 1 = 2,097,151 non-empty AP subsets
+```
+
+This exhaustive search is feasible for the filtered 21-AP setting, but the runtime grows sharply near the middle of the search space, making brute-force impractical for routine assessment in larger deployments.
+
 ### Genetic Algorithm (GA)
 
 GA searches directly over fixed-size AP subsets using population-based evolution. Candidate subsets are evaluated according to the localization degradation they induce, and crossover, mutation, and elitism are used to explore the combinatorial search space.
 
+GA consistently recovers near-worst-case AP subsets and closely tracks the brute-force upper bound across both NN and XGBoost models.
+
 ### Simulated Annealing (SA)
 
-SA searches over fixed-size AP subsets by repeatedly proposing single-swap neighbors. It accepts improving moves and occasionally accepts worse moves according to a cooling schedule, allowing it to escape poor local optima. In the experiments, SA provides the strongest runtime-accuracy trade-off.
+SA searches over fixed-size AP subsets by repeatedly proposing single-swap neighbors. It accepts improving moves and occasionally accepts worse moves according to a cooling schedule, allowing it to escape poor local optima.
+
+SA provides the strongest runtime-accuracy trade-off in the experiments. It remains close to the brute-force upper bound while reducing the runtime from hours or minutes to seconds or sub-seconds, depending on the model.
 
 ### Deep Q-Network (DQN)
 
-The DQN-based method is formulated as a one-step contextual bandit. Each action corresponds to a complete AP subset, and the immediate reward is the vulnerability score induced by perturbing that subset. In this version of the paper, DQN is treated as one benchmarked search strategy rather than the central contribution.
+The DQN-based method is formulated as a one-step contextual bandit. Each action corresponds to a complete AP subset, and the immediate reward is the vulnerability score induced by perturbing that subset.
+
+In this version of the paper, DQN is treated as one benchmarked search strategy rather than the central contribution. DQN captures the general vulnerability trend but remains weaker than GA and SA in recovering the most damaging upper-tail AP subsets.
 
 ### RSSI-Proximity and Random Sampling
 
-RSSI-proximity tests whether stronger average signal strength is a reliable proxy for AP criticality, while random sampling provides an uninformed baseline. Both methods are computationally cheap but consistently underestimate worst-case vulnerability.
+RSSI-proximity tests whether stronger average signal strength is a reliable proxy for AP criticality, while random sampling provides an uninformed baseline.
+
+Both methods are computationally cheap but consistently underestimate worst-case vulnerability. This shows that signal strength alone is not a reliable indicator of AP criticality and that the most damaging AP subsets arise from higher-order AP interactions.
 
 ---
 
 ## Experimental Results
 
-| Result Category | Main Finding |
-|:---|:---|
-| Baseline performance | XGBoost achieves the lowest baseline localization error, while NN is also competitive. |
-| Brute-force vulnerability | NN reaches a worst-case RMSE of about 24.3 m at k = 14, while XGBoost plateaus near 18.8 m. |
-| Vulnerability distribution | Worst-case AP subsets appear as rare upper-tail outliers rather than typical attack cases. |
-| RSSI-proximity heuristic | Strong AP signal strength does not reliably identify the most damaging AP subsets. |
-| Search methods | GA and SA most consistently recover near-brute-force AP subsets. |
-| Runtime | SA provides the best runtime-accuracy trade-off, achieving large speedups over brute-force while remaining close to the worst-case upper bound. |
+### Baseline Localization Performance
 
-Overall, the results show that effective localization security auditing requires structured combinatorial search rather than average-case testing, random sampling, or signal-strength-based AP ranking.
+| Model | RMSE (m) |
+|:---|---:|
+| Linear Regression | 20.86 |
+| XGBoost | 10.31 |
+| LightGBM | 11.98 |
+| Neural Network | 11.30 |
+
+XGBoost achieves the lowest baseline localization error, while the Neural Network model is also competitive. These two models are therefore used for the main vulnerability analysis.
+
+---
+
+### Brute-Force Vulnerability Analysis
+
+| Model | Baseline RMSE | Worst-Case RMSE | Attack Size | Increase |
+|:---|---:|---:|---:|---:|
+| Neural Network | 11.30 m | ≈ 24.3 m | k = 14 | ≈ 115% |
+| XGBoost | 10.31 m | ≈ 18.8 m | plateau region | ≈ 82% |
+
+The Neural Network model is more sharply affected by AP perturbation, reaching a worst-case RMSE of about **24.3 m** at **k = 14**. XGBoost shows a smoother and more resilient degradation profile, plateauing near **18.8 m RMSE**.
+
+---
+
+### Vulnerability Landscape
+
+The brute-force results show that the vulnerability landscape is highly non-uniform and heavy-tailed. Most AP subsets produce moderate degradation, while a small number of rare AP combinations produce extreme localization errors.
+
+This means that worst-case localization failures are not representative of typical AP perturbations. Random failures or uninformed AP subset selection can therefore significantly underestimate the true worst-case risk.
+
+---
+
+### Search Method Quality
+
+| Method | Main Observation |
+|:---|:---|
+| Brute Force | Provides the ground-truth worst-case AP subsets. |
+| GA | Closely tracks brute-force and reliably recovers near-worst-case subsets. |
+| SA | Closely tracks brute-force and provides the best runtime-accuracy trade-off. |
+| DQN | Captures the general trend but remains below GA and SA in the upper-tail region. |
+| RSSI-Proximity | Fails to identify the most damaging AP subsets despite using signal-strength information. |
+| Random Sampling | Computationally cheap but substantially underestimates worst-case vulnerability. |
+
+For the NN model, GA and SA remain especially close to brute force in the high-risk region. For example:
+
+| Attack Size | Brute Force RMSE | GA / SA RMSE |
+|:---|---:|---:|
+| k = 5 | ≈ 16.77 m | ≈ 16.77 m |
+| k = 11 | ≈ 23.91 m | ≈ 23.91 m |
+| k = 14 | ≈ 24.34 m | ≈ 24.33 m |
+
+DQN remains weaker in the same region. For example, on the NN model, it reaches about **14.89 m** at k = 5, **19.18 m** at k = 11, and **20.85 m** at k = 14.
+
+At k = 14, RSSI-proximity and random sampling reach only about **15.90 m** and **15.69 m**, respectively, which is far below the brute-force worst case.
+
+For XGBoost, GA and SA also closely track brute force. For example:
+
+| Attack Size | GA / SA RMSE |
+|:---|---:|
+| k = 10 | ≈ 18.62 m |
+| k = 12 | ≈ 18.71 m |
+| k = 17 | ≈ 18.78 m |
+
+DQN performs better on XGBoost than on NN but still remains below the strongest upper-tail results. At k = 14, RSSI-proximity and random sampling reach only about **16.12 m** and **15.65 m**, respectively.
+
+---
+
+### Runtime Analysis
+
+| Model | Brute-Force Peak Runtime | SA Runtime | SA Speedup |
+|:---|---:|---:|---:|
+| Neural Network | ≈ 268 minutes near k = 10–11 | ≈ 2.83–3.03 seconds | > 5000× |
+| XGBoost | ≈ 15–17 minutes near peak complexity | ≈ 0.31–0.51 seconds | up to ≈ 3000× |
+
+The runtime analysis shows that brute-force search becomes expensive near the middle of the AP subset space, where the number of candidate combinations is largest.
+
+SA reduces the NN brute-force search from several hours to only a few seconds, achieving speedups exceeding **5000×**. For XGBoost, SA reduces the peak brute-force runtime from around 15–17 minutes to sub-second execution, achieving speedups up to approximately **3000×**.
+
+Overall, SA offers the strongest practical balance: it remains close to the brute-force upper bound while requiring only a fraction of the runtime.
 
 ---
 
@@ -141,7 +228,8 @@ Overall, the results show that effective localization security auditing requires
 - Shows that worst-case AP subsets are rare, high-impact combinations in the upper tail of the attack distribution.
 - Demonstrates that RSSI strength alone is an unreliable indicator of AP criticality.
 - Benchmarks brute-force, heuristic, metaheuristic, and learning-based search strategies on NN and XGBoost localization models.
-- Shows that GA and SA can recover near-worst-case AP subsets without exhaustive enumeration, with SA offering the strongest runtime-accuracy trade-off.
+- Shows that GA and SA recover near-worst-case AP subsets without exhaustive enumeration.
+- Demonstrates that SA provides the strongest runtime-accuracy trade-off, achieving speedups exceeding **5000× on NN** and up to approximately **3000× on XGBoost** at peak brute-force complexity.
 
 ---
 
