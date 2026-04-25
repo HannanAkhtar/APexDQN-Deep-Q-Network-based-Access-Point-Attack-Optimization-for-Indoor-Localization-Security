@@ -17,8 +17,6 @@ Using the UJIIndoorLoc dataset, we exhaustively characterize the vulnerability l
 
 The repository benchmarks brute-force enumeration against scalable search strategies, including Genetic Algorithm (GA), Simulated Annealing (SA), Deep Q-Network (DQN), RSSI-proximity selection, and random sampling. The results show that GA and SA most reliably recover near-worst-case AP subsets, while RSSI-based and random strategies substantially underestimate worst-case vulnerability.
 
-A key result is that **Simulated Annealing (SA)** provides the strongest runtime-accuracy trade-off, achieving speedups exceeding **5000× on the Neural Network model** and up to approximately **3000× on the XGBoost model** at peak brute-force complexity, while remaining close to the brute-force upper bound.
-
 ---
 
 ## Abstract
