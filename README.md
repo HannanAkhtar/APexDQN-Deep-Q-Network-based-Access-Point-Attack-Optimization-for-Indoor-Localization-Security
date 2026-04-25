@@ -1,6 +1,6 @@
 # On the Combinatorial Vulnerability of Access Points in Wi-Fi Fingerprinting: Characterization and Efficient Identification
 
-![Figure 1: Methodology for combinatorial AP vulnerability assessment](figures/figure1.png)
+![Figure 1: Methodology for combinatorial AP vulnerability assessment](figures/figure1.pNG)
 
 ---
 
@@ -16,8 +16,6 @@ This work studies the security of Wi-Fi fingerprint-based indoor localization sy
 Using the UJIIndoorLoc dataset, we exhaustively characterize the vulnerability landscape over retained AP subsets and show that worst-case localization failures are highly non-uniform and heavy-tailed. Most AP combinations cause moderate degradation, while a small number of rare AP subsets lead to disproportionately large localization errors.
 
 The repository benchmarks brute-force enumeration against scalable search strategies, including Genetic Algorithm (GA), Simulated Annealing (SA), Deep Q-Network (DQN), RSSI-proximity selection, and random sampling. The results show that GA and SA most reliably recover near-worst-case AP subsets, while RSSI-based and random strategies substantially underestimate worst-case vulnerability.
-
-A key result is that **Simulated Annealing (SA)** provides the strongest runtime-accuracy trade-off, achieving speedups exceeding **5000× on the Neural Network model** and up to approximately **3000× on the XGBoost model** at peak brute-force complexity, while remaining close to the brute-force upper bound.
 
 ---
 
@@ -86,11 +84,11 @@ Brute-force enumeration provides the ground-truth upper bound for each attack si
 Run scalable search methods to identify high-impact AP subsets without exhaustive enumeration:
 
 ```bash
-python -m scripts.run_search --method ga --backend xgb
-python -m scripts.run_search --method sa --backend xgb
-python -m scripts.run_search --method dqn --backend xgb
-python -m scripts.run_search --method rssi --backend xgb
-python -m scripts.run_search --method random --backend xgb
+python -m scripts.run_genetic_algorithm --backend xgb
+python -m scripts.run_simulated_annealing --backend xgb
+python -m scripts.train_dqn --backend xgb
+python -m scripts.run_rssi_proximity --backend xgb
+python -m scripts.run_random_sampling --backend xgb
 ```
 
 Each method evaluates candidate AP subsets under the same perturbation protocol and reports the resulting attacked-set localization error.
