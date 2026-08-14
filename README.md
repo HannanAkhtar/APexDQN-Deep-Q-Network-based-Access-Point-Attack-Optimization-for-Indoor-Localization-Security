@@ -14,9 +14,9 @@ indicator (RSSI) measurements from distributed access points (APs). Manipulating
 a carefully selected group of these measurements can substantially degrade
 localization accuracy.
 
-For a given attack budget \(k\), this work asks:
+For a given attack budget $k$, this work asks:
 
-> Among \(N\) attackable AP units, which subset of \(k\) APs produces the
+> Among $N$ attackable AP units, which subset of $k$ APs produces the
 > greatest localization error when manipulated?
 
 We formulate this task as **combinatorial AP vulnerability assessment** and
@@ -38,7 +38,7 @@ configurations containing up to 120 attackable AP units.
 Wi-Fi fingerprint-based indoor localization is widely used in Internet of
 Things (IoT) environments, yet its dependence on distributed AP infrastructure
 creates an important security risk. This work formulates the identification of
-the most damaging \(k\)-AP subset as a combinatorial vulnerability-assessment
+the most damaging $k$-AP subset as a combinatorial vulnerability-assessment
 problem and studies NN and XGBoost localization models across UJIIndoorLoc,
 UTSIndoorLoc, and SODIndoorLoc. Exact enumeration, where feasible, shows that
 most AP subsets cause moderate degradation while a small fraction produces
@@ -54,20 +54,20 @@ reduce assessment time by orders of magnitude relative to exhaustive search.
 
 | Dataset | Evaluated environment | Attackable AP units | Exact evaluation | Approximate search |
 |:--|:--|--:|:--|:--|
-| UJIIndoorLoc | Building 2, Floor 3 | 21 | all \(k\) | all \(k\) |
-| UJIIndoorLoc | Building 2, Floor 3 | 53 | \(k\leq3\) | \(k=1,\ldots,53\) |
-| UTSIndoorLoc | Floor 4 | 21 | all \(k\) | all \(k\) |
-| UTSIndoorLoc | Floor 4 | 120 | \(k\leq3\) | \(k=1,\ldots,120\) |
-| SODIndoorLoc | SYL environment | 23 physical APs | all \(k\) | all \(k\) |
+| UJIIndoorLoc | Building 2, Floor 3 | 21 | all $k$ | all $k$ |
+| UJIIndoorLoc | Building 2, Floor 3 | 53 | $k\leq3$ | $k=1,\ldots,53$ |
+| UTSIndoorLoc | Floor 4 | 21 | all $k$ | all $k$ |
+| UTSIndoorLoc | Floor 4 | 120 | $k\leq3$ | $k=1,\ldots,120$ |
+| SODIndoorLoc | SYL environment | 23 physical APs | all $k$ | all $k$ |
 
 For SODIndoorLoc, the 2.4-GHz and 5-GHz RSSI features associated with the same
 physical dual-band AP are grouped and manipulated jointly as one attackable AP
 unit.
 
-Complete enumeration is restricted to \(k\leq3\) in the expanded
+Complete enumeration is restricted to $k\leq3$ in the expanded
 configurations because the number of candidates grows combinatorially. For
-example, \(\binom{53}{5}=2{,}869{,}685\), while
-\(\binom{120}{4}=8{,}214{,}570\).
+example, $\binom{53}{5}=2{,}869{,}685$, while
+$\binom{120}{4}=8{,}214{,}570$.
 
 ## Methods
 
@@ -163,7 +163,7 @@ python -m scripts.run_bruteforce --backend xgb --kmin 1 --kmax 21
 ```
 
 Brute force returns the exact maximum localization error for each evaluated
-attack budget \(k\). Runtime grows rapidly near the middle of the subset space.
+attack budget $k$. Runtime grows rapidly near the middle of the subset space.
 
 ### 3. Run scalable and baseline methods
 
@@ -194,7 +194,7 @@ and method-specific runtime information required for subsequent analysis.
 
 - Exact enumeration identifies rare, high-impact AP subsets that typical
   perturbations do not reveal.
-- The most damaging subset depends on the attack budget \(k\), localization
+- The most damaging subset depends on the attack budget $k$, localization
   model, AP representation, and indoor environment.
 - Strong average RSSI is not a reliable indicator of AP criticality.
 - SA provides the closest overall approximation to exact enumeration, with GA
